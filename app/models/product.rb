@@ -1,7 +1,14 @@
 class Product < ApplicationRecord
-  has_many :order_items
+  has_many :order_items, dependent: :restrict_with_error
+
   validates :name, presence: true
   validates :price, presence: true, numericality: { greater_than: 0 }
+  validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :labor_percentage, numericality: { greater_than_or_equal_to: 0 }
 
   scope :available, -> { where(active: true) }
+
+  def in_stock?(quantity)
+    stock >= quantity
+  end
 end

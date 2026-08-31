@@ -18,6 +18,4 @@ class Order < ApplicationRecord
   validates :delivery_date, presence: true
   validates :total_price, :discount_amount,
             numericality: { greater_than_or_equal_to: 0 }
-
-  accepts_nested_attributes_for :order_items
 end
