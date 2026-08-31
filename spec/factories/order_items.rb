@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :order_item do
-    order { nil }
-    product { nil }
-    quantity { 1 }
-    unit_price { "9.99" }
+    association :order
+    association :product
+    quantity { 3 }
+    unit_price { product.price }
   end
 end
