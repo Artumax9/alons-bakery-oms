@@ -306,8 +306,8 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    shoulda-matchers (6.5.0)
-      activesupport (>= 5.2.0)
+    shoulda-matchers (8.0.1)
+      activesupport (>= 7.2)
     solid_queue (1.7.0)
       activejob (>= 7.1)
       activerecord (>= 7.1)
@@ -370,7 +370,7 @@ DEPENDENCIES
   rails (~> 8.0.5)
   rspec-rails
   rubocop-rails-omakase
-  shoulda-matchers (~> 6.0)
+  shoulda-matchers (~> 8.0)
   solid_queue
   thruster
   tzinfo-data
