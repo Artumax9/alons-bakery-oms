@@ -57,5 +57,5 @@ end
 
 group :test do
   # One-liner matchers for model validations/associations [https://github.com/thoughtbot/shoulda-matchers]
-  gem "shoulda-matchers", "~> 6.0"
+  gem "shoulda-matchers", "~> 8.0"
 end
