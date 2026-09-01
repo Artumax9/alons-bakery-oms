@@ -4,6 +4,20 @@ RSpec.describe "Api::V1::Orders", type: :request do
   let(:customer) { create(:customer) }
   let(:rolls) { create(:product, price: 1500, stock: 20) }
 
+  describe "GET /api/v1/orders" do
+    it "lists orders newest first with the customer name" do
+      create(:order, customer: customer, status: :pending)
+
+      get "/api/v1/orders"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.first).to include(
+        "status" => "pending",
+        "customer_name" => customer.name
+      )
+    end
+  end
+
   describe "POST /api/v1/orders" do
     it "creates the order and returns 201 with the discounted total" do
       post "/api/v1/orders", params: {

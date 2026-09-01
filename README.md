@@ -78,7 +78,7 @@ Sin `N8N_WEBHOOK_URL` el job simplemente loguea y no falla.
 
 ## Pendientes conocidos
 
-- Sin autenticación (el panel de Alondra la va a necesitar).
+- Sin autenticación: el panel de Alondra (`/panel` en el SPA) hoy está abierto.
 - `POST /customers` crea un cliente nuevo por cada checkout aunque repita teléfono;
   falta `find_or_initialize_by(phone:)`.
 - Módulo de costeo (ingredientes + mano de obra) para que Alondra fije precios:
