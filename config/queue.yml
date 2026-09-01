@@ -15,4 +15,13 @@ test:
   <<: *default
 
 production:
-  <<: *default
+  # Poll every 5s instead of every 1s: Neon bills compute-hours, and a
+  # once-a-second poll would keep the database awake for nothing.
+  dispatchers:
+    - polling_interval: 5
+      batch_size: 500
+  workers:
+    - queues: "*"
+      threads: 3
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      polling_interval: 5
