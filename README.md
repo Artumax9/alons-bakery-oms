@@ -44,15 +44,16 @@ Sin `N8N_WEBHOOK_URL` el job simplemente loguea y no falla.
 
 ## Endpoints
 
+Los endpoints marcados 🔒 exigen el header `X-Admin-Token` igual a `ADMIN_TOKEN`.
+
 | Método | Ruta | Qué hace |
 |---|---|---|
-| GET | `/api/v1/products` | catálogo (solo activos) |
-| GET | `/api/v1/products/:id` | un producto |
-| GET | `/api/v1/customers` · `/:id` | clientes |
-| POST | `/api/v1/customers` | alta de cliente |
-| GET | `/api/v1/orders` · `/:id` | pedidos |
+| GET | `/api/v1/products` · `/:id` | catálogo (solo activos) |
+| POST | `/api/v1/customers` | alta de cliente (checkout) |
 | POST | `/api/v1/orders` | crea un pedido (recalcula precios y stock) |
-| PATCH | `/api/v1/orders/:id/status` | transición de estado |
+| 🔒 GET | `/api/v1/customers` · `/:id` | clientes |
+| 🔒 GET | `/api/v1/orders` · `/:id` | pedidos |
+| 🔒 PATCH | `/api/v1/orders/:id/status` | transición de estado |
 
 ## Decisiones de diseño
 
@@ -76,9 +77,16 @@ Sin `N8N_WEBHOOK_URL` el job simplemente loguea y no falla.
 - **Sin tabla `categories`:** hoy la categoría es una etiqueta (`string`), no una
   entidad con comportamiento. Se promueve a tabla cuando necesite orden o slug propio.
 
+## Despliegue
+
+Pensado para free tier: **Render** (Docker, `./bin/rails server` como comando) + **Neon**
+(Postgres) + **Vercel** (el SPA). Variables en el servidor: `DATABASE_URL`, `RAILS_MASTER_KEY`,
+`ADMIN_TOKEN`, `CORS_ORIGINS`, `SOLID_QUEUE_IN_PUMA=true`. Las migraciones corren solas en el
+arranque (`bin/docker-entrypoint`). El catálogo se carga una vez con `bin/rails db:seed`.
+
 ## Pendientes conocidos
 
-- Sin autenticación: el panel de Alondra (`/panel` en el SPA) hoy está abierto.
+- El panel usa un **token compartido**, no usuarios: alcanza para una operadora, no para varias.
 - `POST /customers` crea un cliente nuevo por cada checkout aunque repita teléfono;
   falta `find_or_initialize_by(phone:)`.
 - Módulo de costeo (ingredientes + mano de obra) para que Alondra fije precios:
