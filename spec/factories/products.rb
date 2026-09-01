@@ -6,6 +6,8 @@ FactoryBot.define do
     active { true }
     stock { 50 }
     labor_percentage { 0 }
+    category { "Dulces" }
+    image_url { nil }
 
     trait :out_of_stock do
       stock { 0 }

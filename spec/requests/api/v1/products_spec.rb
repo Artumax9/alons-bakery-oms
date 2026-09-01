@@ -12,6 +12,17 @@ RSpec.describe "Api::V1::Products", type: :request do
       names = response.parsed_body.map { |p| p["name"] }
       expect(names).to contain_exactly(active.name)
     end
+
+    it "exposes the catalog fields the storefront needs" do
+      create(:product, image_url: "https://example.com/roll.jpg", category: "Dulces")
+
+      get "/api/v1/products"
+
+      expect(response.parsed_body.first).to include(
+        "image_url" => "https://example.com/roll.jpg",
+        "category" => "Dulces"
+      )
+    end
   end
 
   describe "GET /api/v1/products/:id" do

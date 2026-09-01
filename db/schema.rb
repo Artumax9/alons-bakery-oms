@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_31_120003) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_01_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,6 +54,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_120003) do
     t.datetime "updated_at", null: false
     t.integer "stock", default: 0, null: false
     t.decimal "labor_percentage", precision: 5, scale: 2, default: "0.0", null: false
+    t.string "image_url"
+    t.string "category", default: "Otros", null: false
     t.check_constraint "stock >= 0", name: "products_stock_non_negative"
   end
 
