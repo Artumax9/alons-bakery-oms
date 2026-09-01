@@ -19,19 +19,24 @@ module Stock
     end
 
     def reserve
-      errors = []
+      needed_by_product = quantities_by_product
+      # Lock every product up front, then check them all before mutating any —
+      # so a partial reservation never lands even outside a transaction.
+      products = Product.lock.where(id: needed_by_product.keys).index_by(&:id)
 
-      quantities_by_product.each do |product_id, needed|
-        product = Product.lock.find(product_id)
+      errors = needed_by_product.filter_map do |product_id, needed|
+        product = products.fetch(product_id)
+        next if product.stock >= needed
 
-        if product.stock < needed
-          errors << "insufficient stock for #{product.name} (need #{needed}, have #{product.stock})"
-        else
-          product.update!(stock: product.stock - needed)
-        end
+        "insufficient stock for #{product.name} (need #{needed}, have #{product.stock})"
       end
 
       return ServiceResult.failure(errors) if errors.any?
+
+      needed_by_product.each do |product_id, needed|
+        product = products.fetch(product_id)
+        product.update!(stock: product.stock - needed)
+      end
 
       ServiceResult.success
     end
