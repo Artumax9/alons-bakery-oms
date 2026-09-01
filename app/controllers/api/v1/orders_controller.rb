@@ -38,7 +38,10 @@ module Api
       private
 
       def order_params
-        params.require(:order).permit(:customer_id, :delivery_date, :notes, items: [ :product_id, :quantity ])
+        params.require(:order).permit(
+          :customer_id, :delivery_date, :notes, :payment_method,
+          items: [ :product_id, :quantity ]
+        )
       end
     end
   end

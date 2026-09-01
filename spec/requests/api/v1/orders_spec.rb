@@ -31,6 +31,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
         order: {
           customer_id: customer.id,
           delivery_date: 2.days.from_now,
+          payment_method: "transfer",
           items: [ { product_id: rolls.id, quantity: 12 } ]
         }
       }, as: :json
@@ -40,6 +41,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
       expect(body["discount_amount"].to_f).to eq(1500.0)
       expect(body["total_price"].to_f).to eq(16500.0)
       expect(body["order_items"].size).to eq(1)
+      expect(body["payment_method"]).to eq("transfer")
     end
 
     it "returns 422 when stock is insufficient" do

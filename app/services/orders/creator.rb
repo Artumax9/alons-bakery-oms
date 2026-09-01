@@ -11,6 +11,11 @@ module Orders
       customer = Customer.find_by(id: @params[:customer_id])
       return ServiceResult.failure("customer not found") if customer.nil?
 
+      payment_method = @params[:payment_method].presence || "cash"
+      unless Order.payment_methods.key?(payment_method.to_s)
+        return ServiceResult.failure("unknown payment method #{payment_method.inspect}")
+      end
+
       line_result = LineBuilder.new(@params[:items]).call
       return line_result if line_result.failure?
 
@@ -28,6 +33,7 @@ module Orders
           delivery_date: @params[:delivery_date],
           notes: @params[:notes],
           status: :pending,
+          payment_method: payment_method,
           total_price: totals.total,
           discount_amount: totals.discount,
           order_items: lines

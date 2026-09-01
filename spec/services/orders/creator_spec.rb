@@ -24,6 +24,29 @@ RSpec.describe Orders::Creator do
     expect(order.total_price).to eq(18500) # 20000 - 1500
   end
 
+  it "records the chosen payment method" do
+    result = described_class.new(
+      params(items: [ { product_id: rolls.id, quantity: 1 } ]).merge(payment_method: "transfer")
+    ).call
+
+    expect(result.value).to be_payment_transfer
+  end
+
+  it "defaults the payment method to cash" do
+    result = described_class.new(params(items: [ { product_id: rolls.id, quantity: 1 } ])).call
+
+    expect(result.value).to be_payment_cash
+  end
+
+  it "fails on an unknown payment method" do
+    result = described_class.new(
+      params(items: [ { product_id: rolls.id, quantity: 1 } ]).merge(payment_method: "bitcoin")
+    ).call
+
+    expect(result).to be_failure
+    expect(Order.count).to eq(0)
+  end
+
   it "uses the database price, not a price sent by the client" do
     result = described_class.new(
       params(items: [ { product_id: rolls.id, quantity: 1, unit_price: 1 } ])

@@ -15,6 +15,15 @@ class Order < ApplicationRecord
     cancelled: 5
   }
 
+  # prefix: :payment gives `order.payment_transfer?` / `Order.payment_qr`
+  # without colliding with the status methods.
+  enum :payment_method, {
+    cash: 0,
+    transfer: 1,
+    qr: 2,
+    mercado_pago: 3
+  }, prefix: :payment
+
   validates :delivery_date, presence: true
   validates :total_price, :discount_amount,
             numericality: { greater_than_or_equal_to: 0 }
