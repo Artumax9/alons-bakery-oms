@@ -1,2 +1,17 @@
 class ApplicationController < ActionController::API
+  # Centralized error handling: every failure leaves the API as
+  # { "errors": [ "..." ] } with a sensible status code, so the SPA has one
+  # shape to parse.
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from ActionController::ParameterMissing, with: :render_bad_request
+
+  private
+
+  def render_not_found(exception)
+    render json: { errors: [ exception.message ] }, status: :not_found
+  end
+
+  def render_bad_request(exception)
+    render json: { errors: [ exception.message ] }, status: :bad_request
+  end
 end
