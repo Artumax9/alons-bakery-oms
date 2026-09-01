@@ -1,6 +1,9 @@
 module Api
   module V1
     class CustomersController < ApplicationController
+      # Checkout creates a customer; only the panel can browse them.
+      before_action :require_admin, only: [ :index, :show ]
+
       def index
         render json: CustomerBlueprint.render(Customer.order(:name))
       end

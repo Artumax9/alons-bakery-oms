@@ -14,4 +14,17 @@ class ApplicationController < ActionController::API
   def render_bad_request(exception)
     render json: { errors: [ exception.message ] }, status: :bad_request
   end
+
+  # Shared-token guard for the admin (Alondra's panel) endpoints. The SPA sends
+  # ADMIN_TOKEN in the X-Admin-Token header. secure_compare runs in constant
+  # time so the token can't be guessed one character at a time from timing.
+  def require_admin
+    provided = request.headers["X-Admin-Token"].to_s
+    expected = ENV["ADMIN_TOKEN"].to_s
+
+    return if expected.present? &&
+              ActiveSupport::SecurityUtils.secure_compare(provided, expected)
+
+    render json: { errors: [ "unauthorized" ] }, status: :unauthorized
+  end
 end

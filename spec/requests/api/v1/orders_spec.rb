@@ -8,13 +8,20 @@ RSpec.describe "Api::V1::Orders", type: :request do
     it "lists orders newest first with the customer name" do
       create(:order, customer: customer, status: :pending)
 
-      get "/api/v1/orders"
+      get "/api/v1/orders", headers: admin_headers
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body.first).to include(
         "status" => "pending",
         "customer_name" => customer.name
       )
+    end
+
+    it "returns 401 without the admin token" do
+      get "/api/v1/orders"
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.parsed_body["errors"]).to eq([ "unauthorized" ])
     end
   end
 
@@ -65,7 +72,8 @@ RSpec.describe "Api::V1::Orders", type: :request do
     it "advances the status on a valid transition" do
       order = create(:order, status: :pending, customer: customer)
 
-      patch "/api/v1/orders/#{order.id}/status", params: { status: "confirmed" }, as: :json
+      patch "/api/v1/orders/#{order.id}/status",
+            params: { status: "confirmed" }, headers: admin_headers, as: :json
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["status"]).to eq("confirmed")
@@ -74,9 +82,18 @@ RSpec.describe "Api::V1::Orders", type: :request do
     it "returns 422 on an invalid transition" do
       order = create(:order, status: :pending, customer: customer)
 
-      patch "/api/v1/orders/#{order.id}/status", params: { status: "delivered" }, as: :json
+      patch "/api/v1/orders/#{order.id}/status",
+            params: { status: "delivered" }, headers: admin_headers, as: :json
 
       expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "returns 401 without the admin token" do
+      order = create(:order, status: :pending, customer: customer)
+
+      patch "/api/v1/orders/#{order.id}/status", params: { status: "confirmed" }, as: :json
+
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 end

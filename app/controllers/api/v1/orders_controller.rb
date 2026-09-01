@@ -1,6 +1,9 @@
 module Api
   module V1
     class OrdersController < ApplicationController
+      # Anyone can place an order; only the panel can list or move them.
+      before_action :require_admin, only: [ :index, :show, :status ]
+
       def index
         orders = Order.includes(:customer).order(created_at: :desc)
         render json: OrderBlueprint.render(orders)
